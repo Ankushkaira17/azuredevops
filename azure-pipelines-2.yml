@@ -1,0 +1,33 @@
+# Maven
+# Build your Java project and run tests with Apache Maven.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/java
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: Maven@3
+  inputs:
+    mavenPomFile: 'pom.xml'
+    mavenOptions: '-Xmx3072m'
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: true
+    testResultsFiles: '**/surefire-reports/TEST-*.xml'
+    goals: 'package'
+- task: AzureResourceManagerTemplateDeployment@3
+  inputs:
+    deploymentScope: 'Resource Group'
+    azureResourceManagerConnection: 'devopsharshit'
+    subscriptionId: 'c9d03f8a-146d-46ce-af53-d5e0489754e9'
+    action: 'Create Or Update Resource Group'
+    resourceGroupName: 'harshitgroup'
+    location: 'Central US'
+    templateLocation: 'URL of the file'
+    csmFileLink: 'https://portal.azure.com/#view/HubsExtension/DeploymentDetailsBlade/~/template/id/%2Fsubscriptions%2Fc9d03f8a-146d-46ce-af53-d5e0489754e9%2FresourceGroups%2Fharshitgroup%2Fproviders%2FMicrosoft.Resources%2Fdeployments%2FMicrosoft.Template-20230820233951'
+    deploymentMode: 'Complete'
